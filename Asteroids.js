@@ -10,6 +10,13 @@ const ship = {
   angle: 0,
 };
 
+const asteroids = {
+  x: canvas.width / 4,
+  y: canvas.height / 4,
+  angle: 0,
+};
+
+
 function drawShip() {
   ctx.save();
   ctx.translate(ship.x, ship.y);
@@ -26,4 +33,30 @@ function drawShip() {
 }
 
   drawShip();
+
+function makeVerts(s) {
+  let n = 8 + Math.floor(Math.random()*4), v = [];
+  for (let i = 0; i < n; i++) {
+    let a = (i/n)*Math.PI*2;
+    let r = 0.75 + Math.random()*0.25;
+    v.push([Math.cos(a)*r, Math.sin(a)*r]);
+  }
+  return v;
+}
+  function drawAsteroid(a) {
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  ctx.rotate(a.rot);
+  ctx.strokeStyle = '#308921';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  a.verts.forEach((v,i) => {
+    if (i===0) ctx.moveTo(v[0]*a.r, v[1]*a.r);
+    else ctx.lineTo(v[0]*a.r, v[1]*a.r);
+  });
+  ctx.closePath();
+  ctx.stroke();
+  ctx.restore();
+}
+
 
