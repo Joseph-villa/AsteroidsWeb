@@ -61,4 +61,5 @@ function makeVerts(s) {
   ctx.restore();
 }
 
+drawAsteroid(asteroid);
 
