@@ -10,10 +10,12 @@ const ship = {
   angle: 0,
 };
 
-const asteroids = {
-  x: canvas.width / 4,
-  y: canvas.height / 4,
-  angle: 0,
+const asteroid = {
+  x: 100,
+  y: 100,
+  r: 40,
+  rot: 0,
+  verts: makeVerts(3)
 };
 
 
