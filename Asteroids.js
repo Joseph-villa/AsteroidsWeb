@@ -8,6 +8,7 @@ const ship = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   angle: 0,
+  sped: 2,
 };
 
 const asteroid = {
@@ -18,10 +19,23 @@ const asteroid = {
   verts: makeVerts(3)
 };
 
+const keys = {};
+document.addEventListener('keydown', (e) => { keys[e.code] = true; });
+document.addEventListener('keyup',   (e) => { keys[e.code] = false; });
+
+function moveShip() {
+  if (keys['KeyA'])  ship.angle -= 0.05;
+  if (keys['KeyD']) ship.angle += 0.05;
+  if (keys['KeyW']) {
+    ship.x += Math.cos(ship.angle) * ship.sped;
+    ship.y += Math.sin(ship.angle) * ship.sped;
+  }
+}
 
 function drawShip() {
   ctx.save();
   ctx.translate(ship.x, ship.y);
+  ctx.rotate(ship.angle);
   ctx.strokeStyle = '#fff';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -34,7 +48,14 @@ function drawShip() {
   ctx.restore();
 }
 
+function loop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  moveShip();
   drawShip();
+  drawAsteroid(asteroid);
+  requestAnimationFrame(loop);
+}
+loop();
 
 function makeVerts(s) {
   let n = 8 + Math.floor(Math.random()*4), v = [];
@@ -61,5 +82,5 @@ function makeVerts(s) {
   ctx.restore();
 }
 
-drawAsteroid(asteroid);
+
 
