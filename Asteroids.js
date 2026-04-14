@@ -4,6 +4,12 @@ const ctx = canvas.getContext('2d');
 canvas.width = 600;
 canvas.height = 400;
 
+const bg = new Image();
+bg.src = 'Stars.png';
+
+const shipImg = new Image();
+shipImg.src = 'Ship.png';
+
 const ship = {
   x: canvas.width / 2,
   y: canvas.height / 2,
@@ -44,21 +50,14 @@ function moveShip() {
 function drawShip() {
   ctx.save();
   ctx.translate(ship.x, ship.y);
-  ctx.rotate(ship.angle);
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(16, 0);
-  ctx.lineTo(-10, 10);
-  ctx.lineTo(-6, 0);
-  ctx.lineTo(-10, -10);
-  ctx.closePath();
-  ctx.stroke();
+  ctx.rotate(ship.angle + Math.PI / 2);
+  ctx.drawImage(shipImg, -40, -40, 80, 80);
   ctx.restore();
 }
 
 function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
   moonTimer++;
   if(moonTimer >= 8) {
     moonTimer = 0;
