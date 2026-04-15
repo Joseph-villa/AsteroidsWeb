@@ -23,13 +23,11 @@ const SHIP_RADIUS = 15;
 
 function init() {
   asteroids = [];
-  spawnAsteroids(5);
+  spawnAsteroids(7);
+  spawnNewAsteroids();
 }
 init();
 
-function draw() {
-
-}
 
 const ship = {
   x: canvas.width / 2,
@@ -37,14 +35,6 @@ const ship = {
   angle: 0,
   sped: 2,
 };
-
-/*const asteroid = {
-  x: 150,
-  y: 100,
-  r: 40,
-  rot: 0,
-  verts: makeVerts(3)
-};*/
 
 const moon = [];
 for (let i = 1; i <= 60; i++) {
@@ -128,6 +118,20 @@ function shipHit() {
   invincibleTimer = INVINCIBLE_FRAMES;
 }
 
+function checkAsteroidDestruction() {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    for (let j = asteroids.length - 1; j >= 0; j--) {
+      let b = bullets[i];
+      let a = asteroids[j];
+      if (dist(b.x, b.y, a.x, a.y) < 1 + a.r * 0.75) {
+        bullets.splice(i, 1);
+        asteroids.splice(j, 1);
+        break;
+      }
+    }
+  }
+}
+
 function drawLives() {
   ctx.fillStyle = 'red';
   ctx.font = '18px Times New Roman';
@@ -144,6 +148,14 @@ function drawGameOver() {
   ctx.font = '20px Times New Roman';
   ctx.fillText('Presioná R para reiniciar', canvas.width / 2, canvas.height / 2 + 40);
   ctx.textAlign = 'left';
+}
+
+function spawnNewAsteroids() {
+  const intervaloId = setInterval(() => {
+    spawnAsteroids(1);
+    console.log('Asteroide nuevo generado');
+  }, 7500);
+  return intervaloId;
 }
 
 function loop() {
@@ -185,6 +197,7 @@ function loop() {
   }
   
   checkCollisions();
+  checkAsteroidDestruction();
   drawLives(); 
   requestAnimationFrame(loop);
 }
@@ -226,8 +239,8 @@ function wrap(obj) {
 
 function spawnAsteroids(n, x, y, size) {
   for (let i = 0; i < n; i++) {
-    let ax = x !== undefined ? x + rand(-30,30) : rand(0,canvas.width);
-    let ay = y !== undefined ? y + rand(-30,30) : rand(0,canvas.height);
+    let ax = x !== undefined ? x + ship.x + rand(-30,30) : rand(0,canvas.width);
+    let ay = y !== undefined ? y + ship.y + rand(-30,30) : rand(0,canvas.height);
     if (x === undefined) {
       while (dist(ax, ay, canvas.width/2, canvas.height/2) < 120) { ax = rand(0,canvas.width); ay = rand(0,canvas.height); }
     }
