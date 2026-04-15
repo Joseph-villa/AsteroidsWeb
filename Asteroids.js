@@ -10,6 +10,9 @@ bg.src = 'Stars.png';
 const shipImg = new Image();
 shipImg.src = 'Ship.png';
 
+const shotImg = new Image();
+shotImg.src = 'Shot.png';
+
 let asteroids;
 let lives = 3;
 let gameOver = false;
@@ -52,6 +55,9 @@ for (let i = 1; i <= 60; i++) {
 let moonFrame = 0;
 let moonTimer = 0;
 
+const bullets = [];
+let cooldown = 0;
+
 const keys = {};
 document.addEventListener('keydown', (e) => { keys[e.code] = true;
     if (e.code === 'KeyR' && gameOver) {
@@ -86,6 +92,20 @@ function drawShip() {
   ctx.drawImage(shipImg, -40, -40, 80, 80);
   ctx.restore();
   wrap(ship);
+}
+
+function drawBullets() {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    bullets[i].x += bullets[i].vx;
+    bullets[i].y += bullets[i].vy;
+    bullets[i].life--;
+    ctx.save();
+    ctx.translate(bullets[i].x, bullets[i].y);
+    ctx.rotate(bullets[i].angle + Math.PI / 2);
+    ctx.drawImage(shotImg, -60, -60, 120, 120);
+    ctx.restore();
+    if (bullets[i].life <= 0) bullets.splice(i, 1);
+  }
 }
 
 function checkCollisions() {
@@ -139,7 +159,22 @@ function loop() {
     moonFrame = (moonFrame + 1) % 60;
   }
   ctx.drawImage(moon[moonFrame], 450, 30, 120, 120);
+  
+  if (keys['KeyJ'] && cooldown <= 0) {
+  bullets.push({
+    x:     ship.x + Math.cos(ship.angle) * 30,
+    y:     ship.y + Math.sin(ship.angle) * 30,
+    vx:    Math.cos(ship.angle) * 8,
+    vy:    Math.sin(ship.angle) * 8,
+    angle: ship.angle,
+    life:  60
+    });
+    cooldown = 20;
+  }
+  if (cooldown > 0) cooldown--;
+
   moveShip();
+  drawBullets();
   drawShip();
   asteroids.forEach(drawAsteroid);
   asteroids.forEach(a => { a.x += a.vx; a.y += a.vy; a.rot += a.rotSpeed; wrap(a); });
@@ -202,7 +237,3 @@ function spawnAsteroids(n, x, y, size) {
     asteroids.push({ x: ax, y: ay, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, r: s*14, size: s, rot: 0, rotSpeed: (Math.random()-0.5)*0.05, verts: makeVerts(s) });
   }
 }
-
-
-
-
