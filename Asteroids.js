@@ -11,7 +11,7 @@ const ship = {
 };
 
 const asteroid = {
-  x: 100,
+  x: 150,
   y: 100,
   r: 40,
   rot: 0,
