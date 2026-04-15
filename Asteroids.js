@@ -11,6 +11,12 @@ const shipImg = new Image();
 shipImg.src = 'Ship.png';
 
 let asteroids;
+let lives = 3;
+let gameOver = false;
+let invincible = false;
+let invincibleTimer = 0;
+const INVINCIBLE_FRAMES = 120;
+const SHIP_RADIUS = 15;
 
 function init() {
   asteroids = [];
@@ -47,7 +53,20 @@ let moonFrame = 0;
 let moonTimer = 0;
 
 const keys = {};
-document.addEventListener('keydown', (e) => { keys[e.code] = true; });
+document.addEventListener('keydown', (e) => { keys[e.code] = true;
+    if (e.code === 'KeyR' && gameOver) {
+    lives = 3;
+    gameOver = false;
+    ship.x = canvas.width / 2;
+    ship.y = canvas.height / 2;
+    ship.angle = 0;
+    invincible = false;
+    invincibleTimer = 0;
+    init();
+    loop();
+    }
+});
+
 document.addEventListener('keyup',   (e) => { keys[e.code] = false; });
 
 function moveShip() {
@@ -60,14 +79,58 @@ function moveShip() {
 }
 
 function drawShip() {
+  if (invincible && Math.floor(invincibleTimer / 8) % 2 === 0) return;
   ctx.save();
   ctx.translate(ship.x, ship.y);
   ctx.rotate(ship.angle + Math.PI / 2);
   ctx.drawImage(shipImg, -40, -40, 80, 80);
   ctx.restore();
+  wrap(ship);
+}
+
+function checkCollisions() {
+  if (invincible) return;
+  for (let a of asteroids) {
+    if (dist(ship.x, ship.y, a.x, a.y) < SHIP_RADIUS + a.r * 0.75) {
+      shipHit();
+      break;
+    }
+  }
+}
+
+function shipHit() {
+  lives--;
+  if (lives <= 0) { gameOver = true; return; }
+  ship.x = canvas.width / 2;
+  ship.y = canvas.height / 2;
+  ship.angle = 0;
+  invincible = true;
+  invincibleTimer = INVINCIBLE_FRAMES;
+}
+
+function drawLives() {
+  ctx.fillStyle = 'red';
+  ctx.font = '18px Times New Roman';
+  ctx.fillText('♥ '.repeat(lives), 10, 25);
+}
+
+function drawGameOver() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'yellow';
+  ctx.font = 'bold 48px Times New Roman';
+  ctx.textAlign = 'center';
+  ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+  ctx.font = '20px Times New Roman';
+  ctx.fillText('Presioná R para reiniciar', canvas.width / 2, canvas.height / 2 + 40);
+  ctx.textAlign = 'left';
 }
 
 function loop() {
+  if (gameOver) {
+  drawGameOver();
+  return;
+  }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
   moonTimer++;
@@ -80,6 +143,14 @@ function loop() {
   drawShip();
   asteroids.forEach(drawAsteroid);
   asteroids.forEach(a => { a.x += a.vx; a.y += a.vy; a.rot += a.rotSpeed; wrap(a); });
+
+  if (invincible) {
+  invincibleTimer--;
+  if (invincibleTimer <= 0) invincible = false;
+  }
+  
+  checkCollisions();
+  drawLives(); 
   requestAnimationFrame(loop);
 }
 loop();
