@@ -24,10 +24,10 @@ const SHIP_RADIUS = 15;
 function init() {
   asteroids = [];
   spawnAsteroids(7);
-  spawnNewAsteroids();
+  
 }
 init();
-
+spawnNewAsteroids();
 
 const ship = {
   x: canvas.width / 2,
@@ -66,11 +66,15 @@ document.addEventListener('keydown', (e) => { keys[e.code] = true;
 document.addEventListener('keyup',   (e) => { keys[e.code] = false; });
 
 function moveShip() {
-  if (keys['KeyA'])  ship.angle -= 0.05;
-  if (keys['KeyD']) ship.angle += 0.05;
+  if (keys['KeyA'])  ship.angle -= 0.08;
+  if (keys['KeyD']) ship.angle += 0.08;
   if (keys['KeyW']) {
     ship.x += Math.cos(ship.angle) * ship.sped;
     ship.y += Math.sin(ship.angle) * ship.sped;
+  } else if(!keys['KeyW']) {
+        ship.x += Math.cos(ship.angle) * ship.sped * 0.2;
+        ship.y += Math.sin(ship.angle) * ship.sped * 0.2;  
+    
   }
 }
 
@@ -126,6 +130,7 @@ function checkAsteroidDestruction() {
       if (dist(b.x, b.y, a.x, a.y) < 1 + a.r * 0.75) {
         bullets.splice(i, 1);
         asteroids.splice(j, 1);
+        if (a.size > 1.5) spawnAsteroids(2, a.x, a.y , a.size - 1.5);
         break;
       }
     }
@@ -151,11 +156,12 @@ function drawGameOver() {
 }
 
 function spawnNewAsteroids() {
-  const intervaloId = setInterval(() => {
-    spawnAsteroids(1);
-    console.log('Asteroide nuevo generado');
-  }, 7500);
-  return intervaloId;
+  if (asteroids.length <= 12) {
+    setInterval(() => {
+      spawnAsteroids(1);
+      console.log('Asteroide nuevo generado');
+    }, 8500);
+  }
 }
 
 function loop() {
@@ -216,7 +222,7 @@ function makeVerts(s) {
   ctx.save();
   ctx.translate(a.x, a.y);
   ctx.rotate(a.rot);
-  ctx.fillStyle = '#308921';
+  ctx.fillStyle = '#6d6b6bf8';
   ctx.strokeStyle = '#000000';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
@@ -239,10 +245,10 @@ function wrap(obj) {
 
 function spawnAsteroids(n, x, y, size) {
   for (let i = 0; i < n; i++) {
-    let ax = x !== undefined ? x + ship.x + rand(-30,30) : rand(0,canvas.width);
-    let ay = y !== undefined ? y + ship.y + rand(-30,30) : rand(0,canvas.height);
+    let ax = x !== undefined ? x + rand(-30,30) : rand(0,canvas.width);
+    let ay = y !== undefined ? y + rand(-30,30) : rand(0,canvas.height);
     if (x === undefined) {
-      while (dist(ax, ay, canvas.width/2, canvas.height/2) < 120) { ax = rand(0,canvas.width); ay = rand(0,canvas.height); }
+      while (dist(ax, ay, canvas.width/2, canvas.height/2) < 120) { ax = rand(0, canvas.width); ay = rand(0,canvas.height); }
     }
     let s = size || 3;
     let speed = (0.6 + Math.random() * 0.8) * (4 - s) * 0.5 + 0.5;
