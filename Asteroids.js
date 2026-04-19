@@ -5,24 +5,24 @@ canvas.width = 600;
 canvas.height = 400;
 
 const bg = new Image();
-bg.src = 'Stars.png';
+bg.src = 'assets/imagenes/Stars.png';
 
 const shipImg = new Image();
-shipImg.src = 'Ship.png';
+shipImg.src = 'assets/imagenes/Ship.png';
 
 const space = new Image();
-space.src = 'space.png';
+space.src = 'assets/imagenes/Space.png';
 space.onload = () => {
   drawStartScreen();
 };
 
 const shotImg = new Image();
-shotImg.src = 'Shot.png';
+shotImg.src = 'assets/imagenes/Shot.png';
 
-const shootSound = new Audio('shoot.mp3');
-const ambientSound = new Audio('ambient1.mp3');
-const glitchSound = new Audio('glitch.mp3');
-const gameOverSound = new Audio('gameover.mp3');
+const shootSound = new Audio('assets/sonidos/shoot.mp3');
+const ambientSound = new Audio('assets/sonidos/ambient1.mp3');
+const glitchSound = new Audio('assets/sonidos/glitch.mp3');
+const gameOverSound = new Audio('assets/sonidos/gameover.mp3');
 
 ambientSound.loop = true;
 ambientSound.volume = 0.4;
@@ -53,7 +53,7 @@ const ship = {
 const moon = [];
 for (let i = 1; i <= 60; i++) {
   const img = new Image();
-  img.src = 'Moon/' + i + '.png';
+  img.src = 'assets/imagenes/Moon/' + i + '.png';
   moon.push(img);
 }
 let moonFrame = 0;
