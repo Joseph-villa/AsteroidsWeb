@@ -10,8 +10,22 @@ bg.src = 'Stars.png';
 const shipImg = new Image();
 shipImg.src = 'Ship.png';
 
+const space = new Image();
+space.src = 'space.png';
+space.onload = () => {
+  drawStartScreen();
+};
+
 const shotImg = new Image();
 shotImg.src = 'Shot.png';
+
+const shootSound = new Audio('shoot.mp3');
+const ambientSound = new Audio('ambient1.mp3');
+const glitchSound = new Audio('glitch.mp3');
+const gameOverSound = new Audio('gameover.mp3');
+
+ambientSound.loop = true;
+ambientSound.volume = 0.4;
 
 let asteroids;
 let lives = 3;
@@ -20,11 +34,11 @@ let invincible = false;
 let invincibleTimer = 0;
 const INVINCIBLE_FRAMES = 120;
 const SHIP_RADIUS = 15;
+let startScreen = true;
 
 function init() {
   asteroids = [];
   spawnAsteroids(7);
-  
 }
 init();
 spawnNewAsteroids();
@@ -50,6 +64,14 @@ let cooldown = 0;
 
 const keys = {};
 document.addEventListener('keydown', (e) => { keys[e.code] = true;
+    if (startScreen) {
+      startScreen = false;
+      ambientSound.currentTime = 0;
+      ambientSound.play();
+      init();
+      loop();
+      return;
+    }
     if (e.code === 'KeyR' && gameOver) {
     lives = 3;
     gameOver = false;
@@ -58,6 +80,10 @@ document.addEventListener('keydown', (e) => { keys[e.code] = true;
     ship.angle = 0;
     invincible = false;
     invincibleTimer = 0;
+    gameOverSound.pause();
+    gameOverSound.currentTime = 0;
+    ambientSound.currentTime = 0;
+    ambientSound.play();
     init();
     loop();
     }
@@ -114,7 +140,11 @@ function checkCollisions() {
 
 function shipHit() {
   lives--;
-  if (lives <= 0) { gameOver = true; return; }
+  glitchSound.play();
+  if (lives <= 0) { gameOver = true; 
+  gameOverSound.play();
+  ambientSound.pause();   
+  return; }
   ship.x = canvas.width / 2;
   ship.y = canvas.height / 2;
   ship.angle = 0;
@@ -155,6 +185,18 @@ function drawGameOver() {
   ctx.textAlign = 'left';
 }
 
+function drawStartScreen() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(space, 0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ffcc';
+  ctx.font = 'bold 36px Times New Roman';
+  ctx.textAlign = 'center';
+  ctx.fillText('ASTEROIDS', canvas.width / 2, canvas.height / 2 - 40);
+  ctx.font = '20px Times New Roman';
+  ctx.fillText('Presiona cualquier tecla para comenzar', canvas.width / 2, canvas.height / 2 + 20);
+  ctx.textAlign = 'left';
+}
+
 function spawnNewAsteroids() {
   if (asteroids.length <= 12) {
     setInterval(() => {
@@ -165,6 +207,10 @@ function spawnNewAsteroids() {
 }
 
 function loop() {
+  if (startScreen) {
+  drawStartScreen();
+  return;
+  }
   if (gameOver) {
   drawGameOver();
   return;
@@ -188,6 +234,8 @@ function loop() {
     life:  60
     });
     cooldown = 20;
+    shootSound.currentTime = 0;
+    shootSound.play();
   }
   if (cooldown > 0) cooldown--;
 
