@@ -38,15 +38,29 @@ export function resetAsteroids() {
   asteroids = [];
 }
 
-export function spawnNewAsteroids() {
-  setInterval(() => {
-    if (asteroids.length <= 12) {
-      spawnAsteroids(1);
-      console.log('Asteroide nuevo generado');
-    }
-  }, 8500);
+function randBool() {
+  return Math.random() < 0.5;
 }
 
+export function spawnNewAsteroids() {
+  setInterval(() => {
+
+    if (asteroids.length <= 20) {
+
+      let ax, ay;
+      if (randBool()) {
+        ax = rand(0, canvas.width);
+        ay = randBool() ? 0 : canvas.height;
+      } else {
+        ax = randBool() ? 0 : canvas.width;
+        ay = rand(0, canvas.height);
+      }
+      spawnAsteroids(1, ax, ay);
+      console.log('New asteroid spawned');
+    }
+
+  }, 5300);
+}
 
 export function checkAsteroidDestruction() {
   for (let i = bullets.length - 1; i >= 0; i--) {
