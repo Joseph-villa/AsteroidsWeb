@@ -131,7 +131,7 @@ function checkAsteroidDestruction() {
         bullets.splice(i, 1);
         asteroids.splice(j, 1);
         if (a.size > 1.5) spawnAsteroids(2, a.x, a.y , a.size - 1.5);
-        break;
+          break;
       }
     }
   }
@@ -166,8 +166,8 @@ function spawnNewAsteroids() {
 
 function loop() {
   if (gameOver) {
-  drawGameOver();
-  return;
+    drawGameOver();
+    return;
   }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
@@ -177,7 +177,6 @@ function loop() {
     moonFrame = (moonFrame + 1) % 60;
   }
   ctx.drawImage(moon[moonFrame], 450, 30, 120, 120);
-  
   if (keys['KeyJ'] && cooldown <= 0) {
   bullets.push({
     x:     ship.x + Math.cos(ship.angle) * 30,
@@ -198,7 +197,7 @@ function loop() {
   asteroids.forEach(a => { a.x += a.vx; a.y += a.vy; a.rot += a.rotSpeed; wrap(a); });
 
   if (invincible) {
-  invincibleTimer--;
+    invincibleTimer--;
   if (invincibleTimer <= 0) invincible = false;
   }
   
@@ -242,6 +241,7 @@ function wrap(obj) {
   if (obj.x < 0) obj.x += canvas.width; if (obj.x > canvas.width) obj.x -= canvas.width;
   if (obj.y < 0) obj.y += canvas.height; if (obj.y > canvas.height) obj.y -= canvas.height;
 }
+function randBool(){ return Math.random() >= 0.5; }
 
 function spawnAsteroids(n, x, y, size) {
   for (let i = 0; i < n; i++) {
